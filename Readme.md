@@ -56,13 +56,13 @@ console.log (torrents) /*
 {
   "type": "List",
   "metadata": {
-    "hasPrevious": true,
-    "hasNext": false,
-    "currentPage": 1,
-    "totalPages": 14,
-    "timestamp": 1736096104456,
-    "nextPageLink": "https://nyaa.si/?f=0&c=0_0&q=Re%3A+zero&p=2",
-    "nextPage": 2
+    "hasPreviousPage": true,
+    "hasNextPage": true,
+    "current": 5,
+    "total": 14,
+    "timestamp": 1736121700159,
+    "nextPageLink": "https://nyaa.si/?f=0&c=1_0&q=Re%3A+zero&p=6",
+    "nextPage": 6
   },
   count: 75
   "data": [
