@@ -17,7 +17,7 @@
 
 ## 📃 | Description
 
-Este projeto utiliza o Puppeteer para realizar web scraping no site de torrents de anime nyaa.si. Vale ressaltar que o projeto não possui nenhuma afiliação oficial com o nyaa.si, e seu uso é por sua conta e risco. O web scraping pode ser considerado ilegal dependendo de como é utilizado, portanto, é importante que tome cuidado. Evite práticas de pirataria, apoie os studios de anime de forma ética!
+This project uses Puppeteer to perform web scraping on the anime torrent site **nyaa.si**. It is important to note that this project has no official affiliation with **nyaa.si**, and its use is entirely at your own risk. Keep in mind that web scraping can be considered illegal depending on the context and how it is applied. We recommend caution and a commitment to avoiding piracy practices. Support anime studios ethically!
 
 ## 📥 | Installation
 
