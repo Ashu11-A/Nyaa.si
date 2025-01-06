@@ -37,8 +37,6 @@ import { Client, Scraper, Filters } from 'nyaa.si-client'
     // code
 // })()
 
-import { Client, Filters, Scraper } from '../src/index'
-
 await new Client({
   showNavigator: true,
   concurrentJobs: 2
