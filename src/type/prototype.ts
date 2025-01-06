@@ -17,10 +17,7 @@ export type AnimeTorrentData = {
     downloads: number
 }
 
-export type Exporter = {
-  data: ListData
-  nextPage: (page?: number) => Promise<void>
-  loadDetails: (details?: {
+export type LoadDetailsTypes = {
     description?: boolean | 'markdown' | 'html' | 'text'
     submitter?: boolean
     information?: boolean
@@ -35,7 +32,6 @@ export type Exporter = {
         date?: boolean
         message?: boolean
     }
-}) => Promise<Exporter>
 }
 
 export type ListData = {
@@ -52,5 +48,5 @@ export type ListData = {
         timestamp: number
     },
     count: number
-    data: AnimeTorrentData[]
+    torrents: AnimeTorrentData[]
 }

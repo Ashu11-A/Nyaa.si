@@ -1,40 +1,33 @@
-import type { Page } from 'puppeteer'
 import { DataTypes, type AnimeTorrentData, type ListData } from '../type/prototype'
 import { ElementPropertyTypes, FilterObject, type ElementPropertyOptions, type ElementSelector, type FilterKeys, type FilterParams, type FilterValues, type ScraperProps } from '../type/scraper'
 import { Client } from './Client'
-
-enum PageStatus {
-  Reserved = 'reserved',
-  Listening = 'listening',
-  Dead = 'dead'
-}
+import { Exporter } from './Exporter'
+import { Job } from './Job'
 
 export class Scraper {
-  protected pages = new Map<string, {
-    page: Page
-    status: PageStatus
-    currentPage: number | undefined
-  }>()
-  
-  public currentPage: number = 0
-  public totalPages: number = 0
-  public initialPageCount: number = 1
-  public concurrentJobs: number = 1
+  private loadPages: number = 1
+  private searchText: string = ''
+  private filter?: FilterParams
 
   constructor(options?: ScraperProps) {
-    if (options?.concurrentJobs) this.concurrentJobs = options.concurrentJobs
-    if (options?.initialPageCount) this.initialPageCount = options.initialPageCount
+    if (options?.loadPages) this.loadPages = options.loadPages
   }
   
-  async search(text: string, filter?: FilterParams) {
+  async search<PageNumber extends number | undefined = undefined>(content: string, options?: {
+    filter?: FilterParams
+    page?: PageNumber
+    loadOnlyPage?: PageNumber extends number ? boolean : never
+  }, cache?: Exporter) {
     if (!Client.browser) throw new Error('Client not initialized!')
+  
+    this.searchText = content
+    this.filter = options?.filter
     
-    const filterType = filter?.filter ?? 0
+    const filterType =  options?.filter?.filter ?? 0
+    const categories = options?.filter?.category?.split('.')
     let category = '0_0'
 
-    const categories = filter?.category?.split('.')
     if (categories) {
-      console.log(categories)
       const [categorySelect, subCategorySelect] = categories as [FilterKeys, FilterValues]
 
       const categoryIndex = Object.entries(FilterObject).findIndex(([category]) => category === categorySelect)
@@ -43,51 +36,34 @@ export class Scraper {
       category = `${categoryIndex + 1}_${subCategoryIndex + 1}`
     }
 
-    await Promise.all(
-      new Array(this.concurrentJobs)
-        .fill(undefined)
-        .map(() => (async () => {
-          const page = await Client.newPage()
-          const pageId = (page.mainFrame() as unknown as { _id: string })._id
-
-          const currentPage = ++this.currentPage
-          this.currentPage = currentPage
-
-          if (this.currentPage > this.initialPageCount) {
-            this.pages.set(pageId, {
-              page,
-              status: PageStatus.Listening,
-              currentPage: undefined
-            })
-            return
-          }
+    const extractData = await Promise.all(
+      Array.from(
+        { 
+          length: (options?.loadOnlyPage && options?.page)
+            ? 1
+            : this.loadPages
+        },
+        async (_, index) => {
+          const currentPage = (options?.loadOnlyPage && options?.page)
+            ? options.page
+            : ((options?.page
+              ? (options.page - 1)
+              : 0) + (index + 1))
+          console.log(currentPage)
+          console.log(index)
+          console.log(options?.loadOnlyPage, options?.page)
+          const job = await Job.requestJob()
 
           const params = new URLSearchParams({
             'f': String(filterType),
             'c': category,
-            'q': text,
+            'q': content,
             'p': String(currentPage)
           })
 
-          await page.goto(`${Client.host}?${params}`, { waitUntil: 'networkidle0' })
-          this.pages.set(pageId, {
-            page,
-            status: PageStatus.Reserved,
-            currentPage: currentPage
-          })
-        })())
-    )
-  }
+          await job.page.goto(`${Client.host}?${params}`, { waitUntil: 'domcontentloaded' })
 
-  async extract() {
-
-    const extractedDataList = (await Promise.all(
-      Array.from(this.pages.keys()).map((pageId) =>
-        (async () => {
-          const options = this.pages.get(pageId)
-          if (!options?.page || !options?.currentPage) return
-
-          return await options.page.evaluate((ElementPropertyTypes, DataTypes) => {
+          return await job.page.evaluate((ElementPropertyTypes, DataTypes) => {
             function findElement({ selector, subSelector, row }: ElementSelector) {
               const query = subSelector ? `${selector} ${subSelector}` : selector
 
@@ -285,48 +261,41 @@ export class Scraper {
               type: DataTypes.List,
               metadata,
               count: rowData.length,
-              data: rowData.filter((data) =>
+              torrents: rowData.filter((data) =>
                 Object.values(data).every((value) => value !== undefined)
-              ) as ListData['data'],
+              ) as ListData['torrents'],
             }
-          }, ElementPropertyTypes, DataTypes).finally(() => {
-            this.pages.set(pageId, { ...options, status: PageStatus.Listening })
-          })
-        })()
+          }, ElementPropertyTypes, DataTypes)
+            .finally(async () => await job.finishedTask())
+        }
       )
-    )).filter((data) => data !== undefined)
+    )
 
-    console.log(extractedDataList)
-  
-    const flattenedData = extractedDataList.reduce(
-      (acc: AnimeTorrentData[], current) => acc.concat(current.data),
-      []
+    const flattenedData = extractData.reduce(
+      (acc: AnimeTorrentData[], current) => acc.concat(current.torrents),
+      cache?.getData()?.torrents ?? []
     )
   
-    const maxCurrentPageData = extractedDataList.reduce(
+    const maxCurrentPageData = extractData.reduce(
       (max, current) =>
         current.metadata.current > max.metadata.current
           ? current
           : max,
       { metadata: { current: -Infinity } } as ListData
     )
-  
-    return {
-      type: DataTypes.List,
-      metadata: maxCurrentPageData.metadata,
-      count: flattenedData.length,
-      data: flattenedData,
-    } satisfies ListData
-  }
-  
 
-  async close() {
-    for (const id of this.pages.keys()) {
-      const page = this.pages.get(id)?.page
-      if (!page) continue
-
-      Client.session.clear(id)
-      if (!page.isClosed()) page.close()
-    }
+    return new Exporter({
+      scraper: this,
+      search: {
+        content: this.searchText,
+        filter: this.filter
+      },
+      data: {
+        type: DataTypes.List,
+        metadata: maxCurrentPageData.metadata,
+        count: flattenedData.length,
+        torrents: flattenedData,
+      } satisfies ListData
+    })
   }
 }

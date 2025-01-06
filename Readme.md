@@ -24,35 +24,38 @@ Este projeto utiliza o Puppeteer para realizar web scraping no site de torrents 
 Installing this package is as easy as using it. Just run:
 
 ```sh
-npm i nyaa.si
+npm i nyaa.si-client
 ```
 
 ## ❓ | How to use
 
 ```ts
-import { Client, Scraper, Filters } from 'nyaa.si'
+import { Client, Scraper, Filters } from 'nyaa.si-client'
 
 // if you are programming in communjs use this around the code
 // (async () => {
     // code
 // })()
 
+import { Client, Filters, Scraper } from '../src/index'
+
 await new Client({
-  showNavigator: true
+  showNavigator: true,
+  concurrentJobs: 2
 }).initialize()
-    
-const scraper = new Scraper({
-  concurrentJobs: 5,
-  initialPageCount: 5
-})
 
-await scraper.search('Re: zero', {
-  category: 'anime',
-  filter: Filters.NoFilter
-})
+const scraper = new Scraper({ loadPages: 2 }) // This will allow you to load 2 pages simultaneously
 
-const torrents = await scraper.extract()
-console.log (torrents) /*
+const extract = await scraper.search('re: zero', {
+  filter: {
+    category: 'anime',
+    filter: Filters.NoFilter
+  },
+  page: 5
+}) // Scraping page 5 and 6
+
+console.log(extract.getData())
+/*
 {
   "type": "List",
   "metadata": {
@@ -64,7 +67,7 @@ console.log (torrents) /*
     "nextPageLink": "https://nyaa.si/?f=0&c=1_0&q=Re%3A+zero&p=6",
     "nextPage": 6
   },
-  count: 75
+  count: 150
   "data": [
     {
       "id": 1886644,
@@ -80,12 +83,18 @@ console.log (torrents) /*
       "downloads": 447,
       "timestamp": 1729089567
     },
-    ...more 74
+    ...more 149
 }
 */
 
-// If you forget to close the web scraper, you'll have memory leak problems
-await scraper.close()
+const nextPage = await extract.addNextPage() // Add page 7 to the current data
+console.log(nextPage)
+
+const nextMostPages = await extract.addNextPage(2) // Add pages 8 and 9
+console.log(nextMostPages)
+
+const extractOnly = await extract.getNextPage() // Returns only page 10
+console.log(extractOnly)
 ```
 
 </div>

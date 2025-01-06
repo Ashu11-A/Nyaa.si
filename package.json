@@ -1,5 +1,5 @@
 {
-  "name": "nyaa",
+  "name": "nyaa.si-client",
   "version": "1.0.0",
   "main": "dist/cjs/index.cjs",
   "module": "dist/mjs/index.js",
@@ -15,6 +15,7 @@
   "engines": {
     "node": ">=18"
   },
+  "keywords": ["api", "pagination", "wrapper", "torrent", "anime", "wrapper-api", "anime-search", "nyaa-magnet-links", "nyaa", "anime-scraper", "wrapping", "nyaa-si", "torrent-search", "nyaasi", "nyaa-api", "torrent-search-tool"],
   "scripts": {
     "build": "bun run build.ts",
     "test": "bun run ./test/multiple.ts",

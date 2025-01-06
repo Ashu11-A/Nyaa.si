@@ -105,13 +105,7 @@ export type ScraperProps = {
    * 
    * @default 1
    */
-  initialPageCount?: number
-  /**
-   * Total number of pages to be processed in parallel
-   * 
-   * @default 1
-   */
-  concurrentJobs?: number
+  loadPages?: number
 }
 
 
