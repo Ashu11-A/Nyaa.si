@@ -1,14 +1,7 @@
-import { type Page } from 'puppeteer'
-import { JobStatus } from '../type/job'
-import { Client } from './Client'
 import { EventEmitter } from 'events'
-
-type JobEvents = {
-  died: (jobId: string) => void
-  started: (jobId: string) => void
-  reserved: (jobId: string) => void
-  listening: (jobId: string) => void
-}
+import { type Page } from 'puppeteer'
+import { JobStatus, type JobEvents } from '../type/job'
+import { Client } from './Client'
 
 export class Job {
   static all = new Map<string, Job>()
@@ -19,6 +12,8 @@ export class Job {
   static emit<K extends keyof JobEvents>(event: K, ...args: Parameters<JobEvents[K]>) {
     this.emitter.emit(event, ...args)
   }
+
+  constructor(public readonly timeout: number) {}
   
   public id!: string
   public page!: Page
@@ -32,20 +27,23 @@ export class Job {
     this.page = page
     this.status = JobStatus.Listening
 
-    Job.emit('started', this.id)
-    Job.emit('listening', this.id)
+    Job.emit('started', this)
+    Job.emit('listening', this)
     Job.all.set(pageId, this)
   }
 
   async finishedTask () {
     await this.page.goto('about:blank')
+    await new Promise<void>((resolve) => setTimeout(() => resolve(), this.timeout))
     this.status = JobStatus.Listening
-    Job.emit('listening', this.id)
+    Job.emit('listening', this)
   }
 
   stop () {
     Client.session.clear(this.id)
     if (!this.page.isClosed()) this.page.close()
+    Job.emit('died', this)
+    Job.all.delete(this.id)
   }
 
   static requestJob (): Promise<Omit<Job, 'create'>> {
@@ -54,7 +52,7 @@ export class Job {
 
       if (availableJob) {
         availableJob.status = JobStatus.Reserved
-        Job.emit('reserved', availableJob.id)
+        Job.emit('reserved', availableJob)
         return resolve(availableJob)
       }
 
@@ -63,16 +61,13 @@ export class Job {
   }
 
   static setupQueueListener() {
-    this.on('listening', (jobId) => {
-      const job = Job.all.get(jobId)
-      if (!job) return
-
+    this.on('listening', (job) => {
       const nextRequest = Job.requestQueue.shift()
       if (nextRequest) {
         job.status = JobStatus.Reserved
-        Job.emit('reserved', jobId)
+        Job.emit('reserved', job)
 
-        nextRequest(job)
+        nextRequest(job as Job)
       }
     })
   }

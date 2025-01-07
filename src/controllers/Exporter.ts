@@ -1,21 +1,22 @@
 import type { ExporterProps } from '../type/exporter'
-import type { ListData, LoadDetailsTypes } from '../type/prototype'
+import type { DetailsOptions, ListData } from '../type/prototype'
 
-export class Exporter {
-  private scraper
-  public readonly search
-  private data
+export class Exporter<AdditionalDetails extends (DetailsOptions | boolean)>{
+  private scraper: ExporterProps<AdditionalDetails>['scraper']
+  private search: ExporterProps<AdditionalDetails>['search']
+  private data: ExporterProps<AdditionalDetails>['data']
 
-  constructor (options: ExporterProps) {
+  constructor (options: ExporterProps<AdditionalDetails>) {
     this.scraper = options.scraper
     this.data = options.data
     this.search = options.search
   }
 
-  getData() {
+  getData () {
     return this.data
   }
-  private setData (data: ListData) {
+
+  private setData (data: ListData<AdditionalDetails>) {
     this.data = data
   }
 
@@ -41,8 +42,4 @@ export class Exporter {
       filter: this.search.filter
     })
   }
-
-  // loadDetails(details: LoadDetailsTypes | boolean = true) {
-
-  // }
 }

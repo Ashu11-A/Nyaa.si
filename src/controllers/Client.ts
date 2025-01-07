@@ -1,31 +1,18 @@
-import type { Browser, Page } from 'puppeteer'
+import type { Browser } from 'puppeteer'
 import puppeteer from 'puppeteer'
-import { SessionManager } from './SessionManager'
+import type { ClientOptions } from '../type/client'
 import { Job } from './Job'
-
-type ClientConfig = {
-  session?: SessionManager
-  /**
-   * Shows the browser and the actions being taken to perform webscraping
-   * @default false
-   */
-  showNavigator?: boolean
-  /**
-   * Total number of pages to be processed in parallel
-   * 
-   * @default 1
-   */
-  concurrentJobs?: number
-}
+import { SessionManager } from './SessionManager'
 
 export class Client {
   static host = 'https://nyaa.si'
   static browser: Browser
   static session = new SessionManager()
-  private concurrentJobs: number = 1
   public showNavigator: boolean = false
+  public readonly concurrentJobs: number = 1
+  public readonly timeout: number = 3000
 
-  constructor(options?: ClientConfig) {
+  constructor(options?: ClientOptions) {
     if (options?.session) Client.session = options.session
     if (options?.showNavigator) this.showNavigator = options.showNavigator
     if (options?.concurrentJobs) this.concurrentJobs = options.concurrentJobs
@@ -41,7 +28,7 @@ export class Client {
     await Promise.all(
       Array.from(
         { length: this.concurrentJobs },
-        async () => await new Job().create()
+        async () => await new Job(this.timeout).create()
       )
     )
   }
