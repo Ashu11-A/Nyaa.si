@@ -1,6 +1,6 @@
 {
   "name": "nyaa.si-client",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "main": "dist/cjs/index.cjs",
   "module": "dist/mjs/index.js",
   "types": "dist/types/index.ts",

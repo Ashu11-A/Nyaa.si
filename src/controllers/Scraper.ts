@@ -281,20 +281,22 @@ export class Scraper<AdditionalDetails extends (DetailsOptions | boolean)>{
       cache?.getData()?.torrents ?? []
     )
 
-    await Promise.all(
-      Array.from({ length: extractData.length }, async (_, index) => {
-        const data = extractData[index]
-        await Promise.all(
-          Array.from({ length: data.torrents.length }, async (_, index) => {
-            const torrent = data.torrents[index]
-            const details = await this.details(torrent.id, this.loadAdditionalInfo)
-
-            torrent.details = details
-          })
-        )
-      })
-    )
+    if (this.loadAdditionalInfo !== false) {
+      await Promise.all(
+        Array.from({ length: extractData.length }, async (_, index) => {
+          const data = extractData[index]
+          await Promise.all(
+            Array.from({ length: data.torrents.length }, async (_, index) => {
+              const torrent = data.torrents[index]
+              const details = await this.details(torrent.id, this.loadAdditionalInfo)
   
+              torrent.details = details
+            })
+          )
+        })
+      )
+    }
+    
     const maxCurrentPageData = extractData.reduce(
       (max, current) =>
         current.metadata.current > max.metadata.current
