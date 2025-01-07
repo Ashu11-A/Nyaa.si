@@ -15,10 +15,20 @@
   "engines": {
     "node": ">=18"
   },
+  "homepage": "https://github.com/Ashu11-A/Nyaa.si",
   "keywords": ["api", "pagination", "wrapper", "torrent", "anime", "wrapper-api", "anime-search", "nyaa-magnet-links", "nyaa", "anime-scraper", "wrapping", "nyaa-si", "torrent-search", "nyaasi", "nyaa-api", "torrent-search-tool"],
+  "author": {
+    "name": "Ashu11-A",
+    "email": "Matheusn.biolowons@gmail.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ashu11-A/Nyaa.si.git"
+  },
+  "license": "MIT",
   "scripts": {
     "build": "bun run build.ts",
-    "test": "bun run ./test/multiple.ts",
+    "test": "bun run ./test/exemple.ts",
     "lint": "eslint -c eslint.config.js"
   },
   "devDependencies": {

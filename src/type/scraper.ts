@@ -1,3 +1,5 @@
+import type { DetailsOptions } from './prototype'
+
 export const FilterObject = {
   anime: [
     'anime_music_video',
@@ -78,15 +80,17 @@ export type FilterParams = {
   filter?: Filters
 }
 
-type ElementHref = {
+export type ElementHref = {
   type: ElementPropertyTypes.Href
   element: HTMLAnchorElement
 }
-type ElementTextContent = {
+
+export type ElementTextContent = {
   type: ElementPropertyTypes.TextContent
   element: HTMLElement
 }
-type ElementGetAttribute = {
+
+export type ElementGetAttribute = {
   type: ElementPropertyTypes.GetAttribute
   attributeName: string
   element: HTMLElement
@@ -99,44 +103,20 @@ export type ElementSelector = {
   subSelector?: string;
 }
 
-export type ScraperProps = {
+export type ScraperProps<AdditionalDetails extends (DetailsOptions | boolean)> = {
   /**
    * How many pages will be loaded for web scraping, each page has 75 torrents
    * 
    * @default 1
    */
-  loadPages?: number
-}
+  pagesToLoad?: number
 
-
-// export const FilterParams = {
-//   anime: {
-//     anime_music_video: 'Anime Music Video',
-//     english_translated: 'English-translated',
-//     non_english_translated: 'Non-English-translated',
-//     raw: 'Raw'
-//   },
-//   audio: {
-//     lossless: 'Lossless',
-//     lossy: 'Lossy'
-//   },
-//   literature: {
-//     english_translated: 'English-translated',
-//     non_english_translated: 'Non-English-translated',
-//     raw: 'Raw'
-//   },
-//   live_action: {
-//     english_translated: 'English-translated',
-//     idol_promotional_video: 'Idol/Promotional Video',
-//     non_english_translated: 'Non-English-translated',
-//     raw: 'Raw'
-//   },
-//   pictures: {
-//     graphics: 'Graphics',
-//     photos: 'Photos'
-//   },
-//   software: {
-//     applications: 'Applications',
-//     games: 'Games'
-//   }
-// } as const
+  /**
+   *  This carries additional information such as:
+   *  description, submitter, information, files, comments
+   *  
+   *  But it results in 75 requests per page, so I don't recommend using it!
+   *  @default false
+   */
+  loadAdditionalInfo: AdditionalDetails | DetailsOptions
+} 
