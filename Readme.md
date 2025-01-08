@@ -95,46 +95,56 @@ const extract = await scraper.search('re: zero', {
 console.log(extract.getData())
 /*
 {
-  "id": 1886663,
-  "hash": "39d9d66448f2c9deb415eeaf8cb82ccfd803c83b",
-  "title": "[ASW] Re Zero kara Hajimeru Isekai Seikatsu - 53 [1080p HEVC x265 10Bit][AAC]",
-  "category": "Anime - English-translated",
-  "link": "https://nyaa.si/view/1886663",
-  "torrent": "https://nyaa.si/download/1886663.torrent",
-  "magnet": "magnet:?xt=urn:btih:...",
-  "size": "281.5 MiB",
-  "seeders": 77,
-  "leechers": 1,
-  "downloads": 5875,
-  "timestamp": 1729092113,
-  "details": {
-    "type": "details",
-    "description": "### Report issues on our [discord server](...",
-    "submitter": {
-      "name": "AkihitoSubsWeeklies",
-      "url": "https://nyaa.si/user/AkihitoSubsWeeklies"
+  "type": "list",
+  "metadata": {
+    "hasPreviousPage": true,
+    "hasNextPage": true,
+    "current": 2,
+    "total": 14,
+    "timestamp": 1736376348958,
+    "timeTaken": 109.094,
+    "nextPageLink": "https://nyaa.si/?f=0&c=1_0&q=re%3A+zero&p=3",
+    "nextPage": 3
+  },
+  "count": 150,
+  "torrents": [
+    {
+      "id": 1917004,
+      "hash": "9dc1ff3ab137795503c91fdaeadfead6d44530e2",
+      "category": "Anime - English-translated",
+      "name": "Re ZERO Starting Life in Another World...",
+      "links": {
+        "magnet": "magnet:?xt=urn:btih:...",
+        "page": "/view/1917004",
+        "torrent": "/download/1917004.torrent"
+      },
+      "size": "199.8 MiB",
+      "timestamp": 1735741923,
+      "stats": {
+        "seeders": 22,
+        "leechers": 4,
+        "downloaded": 224
+      },
+      "details": {
+        "type": "details",
+        "submitter": {
+          "name": "varyg1001",
+          "url": "https://nyaa.si/user/varyg1001"
+        },
+        "information": "https://myanimelist.net/anime/54857",
+        "files": [
+          {
+            "type": "file",
+            "fileName": "Re.ZERO.Starting.Life.in.Another.World.S03E08.The.Person.Ill.Fall.for.Someday.1080p.BILI.WEB-DL.AAC2.0.H.264-VARYG.mkv ",
+            "readableSize": "199.8 MiB",
+            "sizeInBytes": 209505484.8
+          }
+        ]
+      }
     },
-    "information": "https://discord.gg/....",
-    "files": [
-      {
-        "type": "file",
-        "fileName": "[ASW] Re Zero kara Hajimeru Isekai Seikatsu - 53 [1080p HEVC][9F98648D].mkv ",
-        "readableSize": "281.5 MiB",
-        "sizeInBytes": 295174144
-      }
-    ],
-    "comments": [
-      {
-        "avatarURL": "https://nyaa.si/static/img/avatar/default.png",
-        "userName": "ZERO900",
-        "message": "Thanks",
-        "date": "2024-10-16 21:35:16",
-        "timestamp": 1729125316,
-        "isUploader": false
-      }
-    ]
-  }
-},
+    // more 149...
+  ]
+}
 */
 
 // const details = await scraper.details('https://nyaa.si/view/1919038')

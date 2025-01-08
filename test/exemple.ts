@@ -42,7 +42,7 @@ const scraper = new Scraper({
    * 
    * @default 1
    */
-  pagesToLoad: 1,
+  pagesToLoad: 2,
 })
 
 /**
