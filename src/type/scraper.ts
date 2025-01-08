@@ -103,7 +103,9 @@ export type ElementSelector = {
   subSelector?: string;
 }
 
-export type ScraperProps<AdditionalDetails extends (DetailsOptions | boolean)> = {
+export type ScraperProps<
+  AdditionalDetails extends (DetailsOptions | boolean),
+> = {
   /**
    * How many pages will be loaded for web scraping, each page has 75 torrents
    * 
