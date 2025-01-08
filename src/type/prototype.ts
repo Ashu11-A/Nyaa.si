@@ -60,7 +60,7 @@ export type Comment = {
     userName: string
     avatarURL: string
     timestamp: number
-    date: string
+    publishDate: string
     message: string
     isUploader: boolean
 }
@@ -93,16 +93,20 @@ export type MapDetailsOptions<AdditionalDetails extends (DetailsOptions | boolea
 export type TorrentData = {
     id: number
     hash: string
-    category: string
-    title: string
-    link: string
-    torrent: string
-    magnet: string
+    name: string
     timestamp: number
     size: string
-    seeders: number
-    leechers: number
-    downloads: number
+    category: string
+    links: {
+        page: string
+        magnet: string
+        torrent: string
+    }
+    stats: {
+        seeders: number
+        leechers: number
+        downloaded: number
+    }
 }
 
 export type TorrentDataWithDetails<AdditionalDetails extends (DetailsOptions | boolean)> = {
@@ -121,6 +125,7 @@ export type ListData<AdditionalDetails extends (DetailsOptions | boolean)> = {
         current: number
         total: number
         timestamp: number
+        timeTaken: number
     },
     count: number
     torrents: (AdditionalDetails extends (DetailsOptions | boolean) ? TorrentDataWithDetails<AdditionalDetails> : TorrentData)[]

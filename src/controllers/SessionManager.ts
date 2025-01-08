@@ -1,14 +1,14 @@
 import UserAgent from 'user-agents'
 
 type SessionOptions = {
-    /**
-     * @link https://www.npmjs.com/package/user-agents
-     */
-    userAgentOptions?: Partial<UserAgent['data']>
-    /**
-     * If not defined, it will generate a userAgent on every call (recommended)
-     */
-    defaultUserAgent?: string
+  /**
+   * @link https://www.npmjs.com/package/user-agents
+   */
+  userAgentOptions?: Partial<UserAgent['data']>
+  /**
+   * If not defined, it will generate a userAgent on every call (recommended)
+   */
+  defaultUserAgent?: string
 }
 
 export class SessionManager {

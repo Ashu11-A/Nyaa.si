@@ -1,19 +1,34 @@
-import { Client, Filters, Job, Scraper } from '../src/index'
+import { Client, Filters, RunTimes, Scraper } from '../src/index'
+import { writeFile } from 'fs/promises'
 
-Job.on('listening', (job) => {
-  console.log(`Job: ${job.id} is available for new tasks`)
+const client = new Client({
+  runTime: RunTimes.Cheerio,
+  /**
+   * This will allow you to load 5 pages simultaneously
+   */
+  concurrentJobs: 5,
+
+  /**
+   * @default 3000
+   */
+  timeout: 3000
+  // runTime: RunTimes.Puppeteer,
+  // showNavigator: true,
 })
 
-Job.on('reserved', (job) => {
-  console.log(`Job: ${job.id} is processing a task`)
-})
+client.on('listening', (job) => console.log(`Job: ${job.id} is available for new tasks`))
+client.on('reserved', (job) => console.log(`Job: ${job.id} is processing a task`))
 
-await new Client({
-  showNavigator: true,
-  concurrentJobs: 5 // This will allow you to load 5 pages simultaneously
-}).initialize()
+/**
+ * You can use these functions to do the setup manually, other than the dynamic initialize:
+ * 
+ * client.setupCheerio()
+ * await client.setupPuppeteer()
+ */
+await client.initialize()
 
 const scraper = new Scraper({
+  client,
   /**
    *  This carries additional information such as:
    *  description, submitter, information, files, comments
@@ -21,13 +36,13 @@ const scraper = new Scraper({
    *  But it results in 75 requests per page, so I don't recommend using it!
    *  @default false
   */
-  loadAdditionalInfo: false,
+  loadAdditionalInfo: false, // true | { comments: true... },
   /**
    * How many pages will be loaded for web scraping, each page has 75 torrents
    * 
    * @default 1
    */
-  pagesToLoad: 2,
+  pagesToLoad: 1,
 })
 
 /**
@@ -86,6 +101,9 @@ console.log(extract.getData())
 },
 */
 
+const details = await scraper.details('https://nyaa.si/view/1919038')
+console.log(details)
+
 const nextPage = await extract.addNextPage() // Add page 3 to the current data
 console.log(nextPage)
 
@@ -96,5 +114,5 @@ const extractOnly = await extract.getNextPage() // Returns only page 6
 console.log(extractOnly)
 
 // console.log(torrents.count)
-// await writeFile('data.json', JSON.stringify(torrents, null, 2))
+await writeFile('data.json', JSON.stringify(extract.getData(), null, 2))
 // await scraper.close()

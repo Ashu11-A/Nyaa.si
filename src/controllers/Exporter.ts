@@ -1,12 +1,16 @@
+import type { RunTimes } from '../type/client'
 import type { ExporterProps } from '../type/exporter'
 import type { DetailsOptions, ListData } from '../type/prototype'
 
-export class Exporter<AdditionalDetails extends (DetailsOptions | boolean)>{
-  private scraper: ExporterProps<AdditionalDetails>['scraper']
-  private search: ExporterProps<AdditionalDetails>['search']
-  private data: ExporterProps<AdditionalDetails>['data']
+export class Exporter<
+  AdditionalDetails extends (DetailsOptions | boolean),
+  RunTime extends RunTimes
+>{
+  private scraper: ExporterProps<AdditionalDetails, RunTime>['scraper']
+  private search: ExporterProps<AdditionalDetails, RunTime>['search']
+  private data: ExporterProps<AdditionalDetails, RunTime>['data']
 
-  constructor (options: ExporterProps<AdditionalDetails>) {
+  constructor (options: ExporterProps<AdditionalDetails, RunTime>) {
     this.scraper = options.scraper
     this.data = options.data
     this.search = options.search
