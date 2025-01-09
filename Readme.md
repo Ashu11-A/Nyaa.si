@@ -30,7 +30,7 @@ npm i nyaa.si-client
 ## ❓ | How to use
 
 ```ts
-import { Client, Filters, Job, Scraper } from 'nyaa.si-client'
+import { Client, Filters, RunTimes, Scraper } from 'nyaa.si-client'
 
 // if you are programming in communjs use this around the code
 // (async () => {
